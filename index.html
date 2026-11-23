@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tajomstvá starovekého Egypta · Dejepis 6. ročník</title>
+  <meta name="description" content="Vzdelávacia dejepisná hra pre 6. ročník základnej školy o starovekom Egypte." />
+  <meta property="og:title" content="Tajomstvá starovekého Egypta" />
+  <meta property="og:description" content="Vzdelávacia dejepisná hra pre 6. ročník základnej školy o starovekom Egypte." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Caveat:wght@600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #FFF6EC;
+      --pink: #FFC8DD;
+      --blue: #BDE0FE;
+      --mint: #B9FBC0;
+      --yellow: #FFF1A8;
+      --lilac: #D7C6F5;
+      --peach: #FFD6A5;
+      --text: #4A4458;
+      --text-muted: #766E87;
+      --card: #FFFDF9;
+      --shadow-soft: 0 14px 36px rgba(74, 68, 88, 0.09);
+      --shadow-card: 0 8px 22px rgba(74, 68, 88, 0.08);
+      --shadow-btn: 0 10px 24px rgba(74, 68, 88, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    .viewport-wrapper {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: radial-gradient(circle at 20% 15%, #FFFDF9 0%, var(--bg) 62%, #FCECD8 100%);
+    }
+
+    #stage {
+      width: 1890px;
+      height: 1063px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      background-color: var(--bg);
+      border-radius: 32px;
+      box-shadow: 0 24px 70px rgba(74, 68, 88, 0.14);
+      transform-origin: center center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Soft decorative background shapes (calm pastel, low clutter) */
+    .bg-decor {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-blob {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.45;
+    }
+
+    .bg-blob-1 {
+      width: 620px;
+      height: 620px;
+      background: var(--yellow);
+      top: -240px;
+      left: -140px;
+    }
+
+    .bg-blob-2 {
+      width: 520px;
+      height: 520px;
+      background: var(--blue);
+      bottom: -220px;
+      right: -120px;
+      opacity: 0.35;
+    }
+
+    .bg-blob-3 {
+      width: 380px;
+      height: 380px;
+      background: var(--lilac);
+      top: 120px;
+      right: -140px;
+      opacity: 0.25;
+    }
+
+    /* Sound toggle button - Top Right */
+    .sound-btn {
+      position: absolute;
+      top: 30px;
+      right: 36px;
+      z-index: 50;
+      width: 84px;
+      height: 84px;
+      border-radius: 26px;
+      border: 3px solid rgba(74, 68, 88, 0.1);
+      background: var(--card);
+      box-shadow: var(--shadow-card);
+      font-size: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text);
+      transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.16s ease;
+    }
+
+    .sound-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      background: var(--yellow);
+    }
+
+    .sound-btn:active {
+      transform: translateY(1px) scale(0.97);
+    }
+
+    .sound-btn:focus-visible,
+    .btn-primary:focus-visible,
+    .option-btn:focus-visible,
+    .btn-next:focus-visible {
+      outline: 4px solid #6E6287;
+      outline-offset: 4px;
+    }
+
+    /* Signature Mark - Bottom Right on every screen */
+    .signature-badge {
+      position: absolute;
+      right: 34px;
+      bottom: 20px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 24px;
+      background: rgba(255, 253, 249, 0.72);
+      color: rgba(74, 68, 88, 0.72);
+      font-family: 'Caveat', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      pointer-events: none;
+    }
+
+    .signature-badge svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Screen switching */
+    .screen {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+      display: none;
+      padding: 40px 56px 56px;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* ================= START SCREEN ================= */
+    #screen-start {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 64px;
+      padding: 56px 84px;
+    }
+
+    .start-left {
+      flex: 1.05;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .kicker-line {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .title-heading {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 800;
+      font-size: 82px;
+      line-height: 1.05;
+      color: var(--text);
+      margin-bottom: 26px;
+      text-wrap: balance;
+    }
+
+    .start-desc {
+      font-size: 28px;
+      line-height: 1.48;
+      color: var(--text);
+      max-width: 720px;
+      margin-bottom: 36px;
+    }
+
+    .start-highlights {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 44px;
+    }
+
+    .highlight-box {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 18px 26px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .highlight-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .btn-primary {
+      min-width: 300px;
+      min-height: 92px;
+      padding: 20px 56px;
+      border: none;
+      border-radius: 28px;
+      background: linear-gradient(135deg, var(--mint) 0%, #98F5A8 100%);
+      color: var(--text);
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: 38px;
+      cursor: pointer;
+      box-shadow: var(--shadow-btn);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 16px 34px rgba(74, 68, 88, 0.16);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .start-right {
+      flex: 0.95;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-illustration-card {
+      width: 760px;
+      height: 760px;
+      background: var(--card);
+      border-radius: 40px;
+      box-shadow: var(--shadow-soft);
+      padding: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ================= GAMEPLAY SCREEN ================= */
+    #screen-game {
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 32px 56px 52px;
+    }
+
+    .game-hud {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-right: 112px; /* Leave clear space for sound button */
+      height: 88px;
+      flex-shrink: 0;
+    }
+
+    .hud-progress-group {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      background: var(--card);
+      padding: 14px 28px;
+      border-radius: 26px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hud-counter {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .progress-steps {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-step {
+      width: 34px;
+      height: 18px;
+      border-radius: 10px;
+      background: #EFE7DB;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .progress-step.current {
+      background: var(--yellow);
+      border: 2px solid #D9BD55;
+      transform: scaleY(1.22);
+    }
+
+    .progress-step.correct {
+      background: var(--mint);
+      border: 2px solid #69C98A;
+    }
+
+    .progress-step.wrong {
+      background: var(--pink);
+      border: 2px solid #E297B5;
+    }
+
+    .hud-score-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card);
+      padding: 14px 30px;
+      border-radius: 26px;
+      box-shadow: var(--shadow-card);
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .game-main {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      gap: 44px;
+      margin-top: 22px;
+      margin-bottom: 14px;
+      min-height: 0;
+    }
+
+    .visual-panel {
+      width: 540px;
+      flex-shrink: 0;
+      background: var(--card);
+      border-radius: 36px;
+      box-shadow: var(--shadow-soft);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .visual-svg-wrap {
+      width: 440px;
+      height: 440px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: gentleFloat 4.5s ease-in-out infinite;
+    }
+
+    .visual-caption {
+      margin-top: 22px;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .question-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .question-header {
+      background: var(--card);
+      border-radius: 32px;
+      box-shadow: var(--shadow-card);
+      padding: 28px 36px;
+    }
+
+    .question-topic {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .question-text {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: 40px;
+      line-height: 1.24;
+      color: var(--text);
+      text-wrap: balance;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin: 22px 0;
+    }
+
+    .option-btn {
+      min-height: 132px;
+      padding: 20px 26px;
+      border-radius: 28px;
+      border: 3px solid rgba(74, 68, 88, 0.08);
+      background: var(--card);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.3;
+      transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      transform: translateY(-4px);
+      border-color: rgba(74, 68, 88, 0.24);
+      background: #FFFFFF;
+    }
+
+    .option-btn:active:not(:disabled) {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .option-letter {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      flex-shrink: 0;
+      background: var(--yellow);
+      color: var(--text);
+      transition: background-color 0.18s ease;
+    }
+
+    .option-btn[data-idx="1"] .option-letter { background: var(--blue); }
+    .option-btn[data-idx="2"] .option-letter { background: var(--lilac); }
+    .option-btn[data-idx="3"] .option-letter { background: var(--peach); }
+
+    .option-btn.is-correct {
+      background: var(--mint);
+      border-color: #5DBE82;
+      transform: scale(1.01);
+    }
+
+    .option-btn.is-correct .option-letter {
+      background: #FFFFFF;
+    }
+
+    .option-btn.is-wrong {
+      background: var(--pink);
+      border-color: #E08DAC;
+    }
+
+    .option-btn.is-wrong .option-letter {
+      background: #FFFFFF;
+    }
+
+    .option-btn.is-dimmed {
+      opacity: 0.56;
+    }
+
+    .option-status-icon {
+      margin-left: auto;
+      font-size: 28px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* Reserved Feedback Container */
+    .feedback-slot {
+      min-height: 168px;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .feedback-idle {
+      width: 100%;
+      border-radius: 26px;
+      background: rgba(255, 253, 249, 0.7);
+      border: 2px dashed rgba(74, 68, 88, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 32px;
+      font-size: 23px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .feedback-card {
+      width: 100%;
+      border-radius: 28px;
+      padding: 22px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+      box-shadow: var(--shadow-card);
+      animation: slideFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .feedback-card.correct {
+      background: var(--mint);
+      border: 3px solid #63C789;
+    }
+
+    .feedback-card.wrong {
+      background: var(--peach);
+      border: 3px solid #E6AD6E;
+    }
+
+    @keyframes slideFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback-body {
+      flex: 1;
+    }
+
+    .feedback-title {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .feedback-fact {
+      font-size: 21px;
+      line-height: 1.38;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .btn-next {
+      min-width: 240px;
+      min-height: 84px;
+      padding: 18px 36px;
+      border-radius: 24px;
+      border: none;
+      background: var(--card);
+      color: var(--text);
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow-card);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-shrink: 0;
+      transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-next:hover {
+      transform: translateY(-3px) scale(1.02);
+      background: #FFFFFF;
+    }
+
+    .btn-next:active {
+      transform: translateY(1px);
+    }
+
+    /* ================= END SCREEN ================= */
+    #screen-end {
+      align-items: center;
+      justify-content: center;
+      padding: 48px 80px;
+    }
+
+    .end-card {
+      width: 1280px;
+      background: var(--card);
+      border-radius: 40px;
+      box-shadow: var(--shadow-soft);
+      padding: 56px 68px;
+      display: flex;
+      align-items: center;
+      gap: 64px;
+    }
+
+    .end-illustration {
+      width: 400px;
+      height: 440px;
+      border-radius: 32px;
+      background: var(--yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 24px;
+    }
+
+    .end-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .end-rank {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .end-title {
+      font-family: 'Baloo 2', sans-serif;
+      font-size: 62px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .end-score-display {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 20px;
+      font-family: 'Baloo 2', sans-serif;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .end-score-num {
+      font-size: 84px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .end-score-label {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .end-stars {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .end-message {
+      font-size: 26px;
+      line-height: 1.45;
+      color: var(--text);
+      margin-bottom: 38px;
+    }
+
+    /* Celebratory mini particles inside stage */
+    .confetti-burst {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 45;
+      overflow: hidden;
+    }
+
+    .confetti-dot {
+      position: absolute;
+      border-radius: 50%;
+      animation: popParticle 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes popParticle {
+      0% { transform: translate(0, 0) scale(0.4); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(1.1); opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .visual-svg-wrap,
+      .confetti-dot,
+      .feedback-card {
+        animation: none !important;
+      }
+      .option-btn,
+      .btn-primary,
+      .btn-next,
+      .sound-btn {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport-wrapper">
+    <main id="stage" aria-label="Vzdelávacia hra Tajomstvá starovekého Egypta">
+      <!-- Soft pastel background blobs -->
+      <div class="bg-decor" aria-hidden="true">
+        <div class="bg-blob bg-blob-1"></div>
+        <div class="bg-blob bg-blob-2"></div>
+        <div class="bg-blob bg-blob-3"></div>
+      </div>
+
+      <!-- Sound Toggle Button (Top-Right) -->
+      <button id="btn-sound" class="sound-btn" type="button" aria-label="Vypnúť alebo zapnúť zvuk" aria-pressed="false" title="Zvuk">
+        🔊
+      </button>
+
+      <!-- Confetti Layer -->
+      <div id="confetti-layer" class="confetti-burst" aria-hidden="true"></div>
+
+      <!-- ==================== 1. START SCREEN ==================== -->
+      <section id="screen-start" class="screen active" aria-labelledby="start-title">
+        <div class="start-left">
+          <div class="kicker-line">
+            <span>Dejepis · 6. ročník ZŠ</span>
+          </div>
+          <h1 id="start-title" class="title-heading">Tajomstvá starovekého Egypta</h1>
+          <p class="start-desc">
+            Vydaj sa na dobrodružnú výpravu k brehom rieky Níl! Čaká ťa <span id="start-q-count">10</span> otázok o faraónoch, pyramídach, hieroglyfoch a každodennom živote starých Egypťanov.
+          </p>
+          <div class="start-highlights">
+            <div class="highlight-box">
+              <div class="highlight-icon" style="background: var(--yellow);">🏺</div>
+              <span><span id="highlight-count">10</span> otázok</span>
+            </div>
+            <div class="highlight-box">
+              <div class="highlight-icon" style="background: var(--blue);">🐫</div>
+              <span>Zaujímavosti k odpovediam</span>
+            </div>
+            <div class="highlight-box">
+              <div class="highlight-icon" style="background: var(--lilac);">⭐</div>
+              <span>Bez stresu a na čas</span>
+            </div>
+          </div>
+          <button id="btn-start" class="btn-primary" type="button">
+            <span>Začať</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <div class="start-right">
+          <div class="hero-illustration-card" aria-hidden="true">
+            <!-- Custom Pastel Egyptian Panorama SVG -->
+            <svg viewBox="0 0 600 600" width="100%" height="100%">
+              <defs>
+                <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#FFF1A8" stop-opacity="0.55" />
+                  <stop offset="55%" stop-color="#BDE0FE" stop-opacity="0.45" />
+                  <stop offset="100%" stop-color="#FFF6EC" stop-opacity="0.2" />
+                </linearGradient>
+              </defs>
+              <rect x="20" y="20" width="560" height="560" rx="36" fill="url(#skyGrad)" />
+              <!-- Warm Pastel Sun -->
+              <circle cx="465" cy="135" r="58" fill="#FFF1A8" />
+              <circle cx="465" cy="135" r="42" fill="#FFD6A5" />
+              <!-- Soft Clouds -->
+              <g fill="#FFFDF9" opacity="0.9">
+                <rect x="75" y="95" width="125" height="36" rx="18" />
+                <circle cx="115" cy="95" r="24" />
+                <circle cx="152" cy="90" r="28" />
+                <rect x="245" y="145" width="98" height="28" rx="14" />
+                <circle cx="282" cy="145" r="20" />
+              </g>
+              <!-- Distant Dunes -->
+              <path d="M20 390 Q 170 335 320 385 T 580 370 L 580 460 L 20 460 Z" fill="#FFD6A5" opacity="0.55" />
+              <!-- Large Pyramid -->
+              <polygon points="105,405 265,180 415,405" fill="#FFD6A5" />
+              <polygon points="265,180 415,405 315,405" fill="#F2BE86" />
+              <!-- Smaller Pyramid -->
+              <polygon points="325,415 445,255 545,415" fill="#FFF1A8" />
+              <polygon points="445,255 545,415 470,415" fill="#F3DE8A" />
+              <!-- Nile River -->
+              <path d="M20 420 Q 160 395 300 428 T 580 415 L 580 580 L 20 580 Z" fill="#BDE0FE" />
+              <path d="M55 465 Q 165 445 265 470" stroke="#FFFDF9" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.7" />
+              <path d="M330 500 Q 430 482 525 505" stroke="#FFFDF9" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.7" />
+              <!-- Green Nile Bank + Palm Tree -->
+              <path d="M20 415 Q 110 395 190 425 L 145 455 Q 70 445 20 460 Z" fill="#B9FBC0" />
+              <path d="M84 422 Q 72 340 96 285" stroke="#8C7362" stroke-width="14" stroke-linecap="round" fill="none" />
+              <g fill="#7ED892">
+                <path d="M96 285 Q 42 265 32 302 Q 68 298 96 285 Z" />
+                <path d="M96 285 Q 60 232 102 222 Q 110 258 96 285 Z" />
+                <path d="M96 285 Q 145 245 158 282 Q 124 292 96 285 Z" />
+                <path d="M96 285 Q 146 298 140 335 Q 110 314 96 285 Z" />
+              </g>
+              <!-- Cute Papyrus Boat on Nile -->
+              <g transform="translate(275, 448)">
+                <path d="M0 32 Q 65 65 145 28 Q 115 55 30 55 Z" fill="#F2BE86" />
+                <line x1="72" y1="38" x2="72" y2="-32" stroke="#8C7362" stroke-width="5" stroke-linecap="round" />
+                <path d="M75 -26 Q 125 -8 118 22 L 75 22 Z" fill="#FFFDF9" />
+              </g>
+              <!-- Lotus Flowers -->
+              <g transform="translate(150, 520)">
+                <ellipse cx="0" cy="10" rx="28" ry="8" fill="#B9FBC0" />
+                <path d="M-16 8 Q -8 -14 0 8 Q 8 -14 16 8 Z" fill="#FFC8DD" />
+                <path d="M-9 8 Q 0 -18 9 8 Z" fill="#FFA6C9" />
+              </g>
+              <g transform="translate(485, 535)">
+                <ellipse cx="0" cy="8" rx="22" ry="7" fill="#B9FBC0" />
+                <path d="M-12 6 Q -6 -10 0 6 Q 6 -10 12 6 Z" fill="#FFC8DD" />
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== 2. GAMEPLAY SCREEN ==================== -->
+      <section id="screen-game" class="screen" aria-label="Hracia plocha">
+        <header class="game-hud">
+          <div class="hud-progress-group">
+            <span id="hud-counter" class="hud-counter">Otázka 1 / 10</span>
+            <div id="progress-steps" class="progress-steps" aria-hidden="true"></div>
+          </div>
+          <div class="hud-score-box">
+            <span aria-hidden="true">⭐</span>
+            <span id="hud-score">Skóre: 0</span>
+          </div>
+        </header>
+
+        <div class="game-main">
+          <aside class="visual-panel" id="visual-panel">
+            <div id="visual-svg-wrap" class="visual-svg-wrap" aria-hidden="true"></div>
+            <div id="visual-caption" class="visual-caption"></div>
+          </aside>
+
+          <div class="question-panel">
+            <div class="question-header">
+              <div id="question-topic" class="question-topic"></div>
+              <h2 id="question-text" class="question-text"></h2>
+            </div>
+
+            <div id="options-grid" class="options-grid" role="group" aria-label="Možnosti odpovede"></div>
+
+            <div id="feedback-slot" class="feedback-slot" aria-live="polite">
+              <div class="feedback-idle">
+                Vyber jednu zo štyroch možností kliknutím, dotykom alebo klávesmi 1–4.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== 3. END SCREEN ==================== -->
+      <section id="screen-end" class="screen" aria-labelledby="end-title">
+        <div class="end-card">
+          <div class="end-illustration" aria-hidden="true">
+            <!-- Pastel Egyptian Royal Trophy / Cartouche SVG -->
+            <svg viewBox="0 0 320 360" width="100%" height="100%">
+              <circle cx="160" cy="175" r="128" fill="#FFFDF9" opacity="0.7" />
+              <!-- Wreath / Lotus Rays -->
+              <g fill="#B9FBC0">
+                <ellipse cx="68" cy="185" rx="22" ry="10" transform="rotate(-35 68 185)" />
+                <ellipse cx="58" cy="145" rx="22" ry="10" transform="rotate(-15 58 145)" />
+                <ellipse cx="68" cy="105" rx="22" ry="10" transform="rotate(15 68 105)" />
+                <ellipse cx="252" cy="185" rx="22" ry="10" transform="rotate(35 252 185)" />
+                <ellipse cx="262" cy="145" rx="22" ry="10" transform="rotate(15 262 145)" />
+                <ellipse cx="252" cy="105" rx="22" ry="10" transform="rotate(-15 252 105)" />
+              </g>
+              <!-- Scarab / Golden Sun Cartouche -->
+              <rect x="108" y="68" width="104" height="196" rx="52" fill="#FFD6A5" stroke="#4A4458" stroke-width="5" />
+              <rect x="120" y="80" width="80" height="172" rx="40" fill="#FFFDF9" />
+              <!-- Ankh Symbol inside Cartouche -->
+              <g stroke="#4A4458" stroke-width="8" stroke-linecap="round" fill="none">
+                <ellipse cx="160" cy="126" rx="18" ry="22" fill="#BDE0FE" />
+                <line x1="160" y1="148" x2="160" y2="215" />
+                <line x1="128" y1="168" x2="192" y2="168" />
+              </g>
+              <!-- Base -->
+              <rect x="100" y="274" width="120" height="22" rx="11" fill="#D7C6F5" stroke="#4A4458" stroke-width="4" />
+              <!-- Stars -->
+              <polygon points="160,24 166,38 181,38 169,47 174,61 160,52 146,61 151,47 139,38 154,38" fill="#FFC8DD" stroke="#4A4458" stroke-width="3" />
+            </svg>
+          </div>
+
+          <div class="end-content">
+            <div id="end-rank" class="end-rank">Výprava ukončená</div>
+            <h2 id="end-title" class="end-title">Skvelá práca, objaviteľ!</h2>
+            <div class="end-score-display">
+              <span id="end-score-num" class="end-score-num">8 / 10</span>
+              <span class="end-score-label">správnych odpovedí</span>
+            </div>
+            <div id="end-stars" class="end-stars" aria-hidden="true"></div>
+            <p id="end-message" class="end-message"></p>
+            <button id="btn-restart" class="btn-primary" type="button">
+              <span aria-hidden="true">↺</span>
+              <span>Hrať znova</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Signature Mark (always visible in bottom-right) -->
+      <div class="signature-badge" aria-label="Autor hry">
+        <svg viewBox="0 0 24 24" fill="#FFD6A5" stroke="#4A4458" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="12,2 15.1,8.3 22,9.3 17,14.2 18.2,21 12,17.8 5.8,21 7,14.2 2,9.3 8.9,8.3" />
+        </svg>
+        <span>Vytvoril/a: [opi]</span>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    /* =========================================================================
+       OTÁZKY DO HRY (Jednoducho upraviteľné pole pre učiteľa)
+       Pre každú otázku nastavte:
+       - topic: krátky názov témy
+       - question: znenie otázky
+       - options: 4 možnosti odpovede
+       - correct: index správnej odpovede v poli options (0, 1, 2 alebo 3)
+       - fact: krátka zaujímavosť alebo vysvetlenie po odpovedi
+       - icon: kľúč ilustrácie ('nile', 'pharaoh', 'pyramid', 'hieroglyphs',
+               'papyrus', 'mummy', 'sphinx', 'god_ra', 'tutankhamun', 'calendar')
+       ========================================================================= */
+    const QUESTIONS = [
+      {
+        topic: "Príroda a rieka Níl",
+        question: "Prečo grécky historik Herodotos nazval Egypt „darom Nílu“?",
+        options: [
+          "Pravidelné záplavy prinášali úrodné bahno pre poľnohospodárstvo",
+          "V rieke Níl sa nachádzalo najviac zlata na celom svete",
+          "Rieka Níl chránila Egypt pred silnými snehovými búrkami",
+          "Voda v rieke Níl bola slaná ako Stredozemné more"
+        ],
+        correct: 0,
+        fact: "Záplavy Nílu každý rok zúrodnili pôdu v púšti, vďaka čomu mohli Egypťania pestovať obilie, ľan aj zeleninu.",
+        icon: "nile"
+      },
+      {
+        topic: "Vláda a spoločnosť",
+        question: "Kto stál na čele starovekého Egypta a ľudia ho uctievali ako syna boha slnka?",
+        options: [
+          "Faraón",
+          "Rímsky konzul",
+          "Stredoveký rytier",
+          "Grécky filozof"
+        ],
+        correct: 0,
+        fact: "Faraón mal v Egypte neobmedzenú moc — bol vládcom krajiny, najvyšším sudcom aj hlavným kňazom.",
+        icon: "pharaoh"
+      },
+      {
+        topic: "Staviteľstvo a pamiatky",
+        question: "Na čo slúžili monumentálne kamenné pyramídy v starovekom Egypte?",
+        options: [
+          "Ako hrobky pre faraónov na cestu do posmrtného života",
+          "Ako letné paláce pre bohatých mestských obchodníkov",
+          "Ako vysoké majáky pre lode plaviace sa po mori",
+          "Ako obrovské sklady na uskladnenie riečneho piesku"
+        ],
+        correct: 0,
+        fact: "Najväčšia je Chufuova (Cheopsova) pyramída v Gíze, ktorá meria takmer 140 metrov a tvorí ju vyše 2 milióny blokov.",
+        icon: "pyramid"
+      },
+      {
+        topic: "Písmo a vzdelanie",
+        question: "Ako sa nazývalo posvätné obrázkové písmo starých Egypťanov?",
+        options: [
+          "Hieroglyfy",
+          "Klinové písmo",
+          "Hlaholika",
+          "Severské runy"
+        ],
+        correct: 0,
+        fact: "Hieroglyfy tvorilo vyše 700 znakov a až v roku 1822 ich pomocou Rosettskej dosky rozlúštil vedec Champollion.",
+        icon: "hieroglyphs"
+      },
+      {
+        topic: "Každodenný život",
+        question: "Z čoho Egypťania vyrábali zvitky, na ktoré pisári písali trstinovým perom?",
+        options: [
+          "Z vodnej rastliny papyrus rastúcej pri rieke Níl",
+          "Z jemnej ovčej kože nazývanej pergamen",
+          "Z tenkých plátkov cédrového a dubového dreva",
+          "Z mäkkých a vypálených hlinených doštičiek"
+        ],
+        correct: 0,
+        fact: "Z dužiny stoniek papyrusu sa splietali a lisovali tenké listy, z ktorých neskôr vzniklo aj dnešné slovo „papier“.",
+        icon: "papyrus"
+      },
+      {
+        topic: "Viera v posmrtný život",
+        question: "Prečo starí Egypťania balzamovali telá zomrelých a vytvárali z nich múmie?",
+        options: [
+          "Verili, že duša potrebuje zachované telo pre posmrtný život",
+          "Chceli si z nich vytvoriť kamenné sochy do chrámových záhrad",
+          "Báli sa, že sa v noci prebudia ako neviditeľní duchovia",
+          "Používali ich na strašenie vtákov na obilných poliach"
+        ],
+        correct: 0,
+        fact: "Mumifikácia trvala približne 70 dní a vnútorné orgány sa ukladali do špeciálnych nádob nazývaných kanopy.",
+        icon: "mummy"
+      },
+      {
+        topic: "Slávne pamiatky",
+        question: "Ktorú známu egyptskú sochu v Gíze tvorí telo leva a hlava faraóna?",
+        options: [
+          "Veľká sfinga",
+          "Kolos z ostrova Rodos",
+          "Babylonská brána",
+          "Aténsky Partenón"
+        ],
+        correct: 0,
+        fact: "Veľká sfinga je vytesaná z jedného obrovského kusu skaly a spája silu leva s múdrosťou egyptského vládcu.",
+        icon: "sphinx"
+      },
+      {
+        topic: "Náboženstvo a bohovia",
+        question: "Ktorý egyptský boh slnka bol považovaný za najvyššieho boha a stvoriteľa sveta?",
+        options: [
+          "Boh Ré (Ra)",
+          "Boh Zeus",
+          "Boh Neptún",
+          "Boh Thor"
+        ],
+        correct: 0,
+        fact: "Egypťania verili, že boh Ré sa každý deň plaví po oblohe vo svojej slnečnej bárke a v noci putuje podsvetím.",
+        icon: "god_ra"
+      },
+      {
+        topic: "Archeologické objavy",
+        question: "Čím sa preslávil mladý faraón Tutanchamon, ktorého hrobku objavili v roku 1922?",
+        options: [
+          "Jeho hrobka zostala takmer nedotknutá a plná zlatých pokladov",
+          "Postavil prvú pyramídu z bieleho mramoru na svete",
+          "Vládol Egyptu bez prestávky celých deväťdesiat rokov",
+          "Ako prvý doplavil egyptské lode až k brehom Ameriky"
+        ],
+        correct: 0,
+        fact: "Archeológ Howard Carter našiel jeho hrobku v Údolí kráľov aj so slávnou 11-kilogramovou zlatou posmrtnou maskou.",
+        icon: "tutankhamun"
+      },
+      {
+        topic: "Veda a vynálezy",
+        question: "Aký dôležitý vynález vytvorili Egypťania vďaka pozorovaniu hviezd a záplav Nílu?",
+        options: [
+          "Slnečný kalendár rozdelený na 365 dní",
+          "Prvý parný rušeň poháňaný drevom",
+          "Magnetický kompas na určovanie severu",
+          "Tlačiarenský lis s kovovými písmenami"
+        ],
+        correct: 0,
+        fact: "Egyptský rok mal 12 mesiacov po 30 dní a 5 sviatočných dní navyše — stal sa základom nášho dnešného kalendára.",
+        icon: "calendar"
+      }
+    ];
+
+    /* =========================================================================
+       STAGE SCALING (1890 x 1063 px)
+       ========================================================================= */
+    const stageEl = document.getElementById("stage");
+    function resizeStage() {
+      const scale = Math.min(window.innerWidth / 1890, window.innerHeight / 1063);
+      stageEl.style.transform = "scale(" + scale + ")";
+    }
+    window.addEventListener("resize", resizeStage);
+    resizeStage();
+
+    /* =========================================================================
+       WEB AUDIO API (Synthesized gentle sounds, no external files)
+       ========================================================================= */
+    let audioCtx = null;
+    let isMuted = false;
+    const btnSound = document.getElementById("btn-sound");
+
+    function ensureAudio() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+    }
+
+    function playTone(freq, startOffset, duration, type, volume, endFreq) {
+      if (isMuted) return;
+      ensureAudio();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime + startOffset;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = type || "sine";
+      osc.frequency.setValueAtTime(freq, now);
+      if (endFreq) {
+        osc.frequency.exponentialRampToValueAtTime(endFreq, now + duration);
+      }
+
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(volume, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + duration + 0.02);
+    }
+
+    function playCorrectSound() {
+      // Short, cheerful rising two-note chime
+      playTone(523.25, 0, 0.16, "triangle", 0.16);       // C5
+      playTone(659.25, 0.11, 0.26, "triangle", 0.18);    // E5
+    }
+
+    function playWrongSound() {
+      // Soft, low, gentle "bonk"
+      playTone(210, 0, 0.22, "sine", 0.15, 155);
+    }
+
+    function playFinishSound() {
+      // Short happy melody
+      playTone(523.25, 0, 0.16, "triangle", 0.15);       // C5
+      playTone(659.25, 0.12, 0.16, "triangle", 0.15);    // E5
+      playTone(783.99, 0.24, 0.18, "triangle", 0.16);    // G5
+      playTone(1046.5, 0.38, 0.42, "triangle", 0.18);    // C6
+    }
+
+    btnSound.addEventListener("click", () => {
+      ensureAudio();
+      isMuted = !isMuted;
+      btnSound.textContent = isMuted ? "🔇" : "🔊";
+      btnSound.setAttribute("aria-pressed", String(isMuted));
+      if (!isMuted) {
+        playTone(587.33, 0, 0.1, "sine", 0.1);
+      }
+    });
+
+    /* =========================================================================
+       INLINE SVG ILLUSTRATIONS FOR EACH QUESTION TOPIC
+       ========================================================================= */
+    function getIllustrationData(iconKey) {
+      switch (iconKey) {
+        case "nile":
+          return {
+            bg: "#EAF5FF",
+            caption: "Úrodné brehy rieky Níl",
+            svg: `
+              <svg viewBox="0 0 400 400" width="100%" height="100%">
+                <rect x="20" y="20" width="360" height="360" rx="34" fill="#EAF5FF" />
+                <circle cx="300" cy="95" r="40" fill="#FFF1A8" />
+                <circle cx="300" cy="95" r="28" fill="#FFD6A5" />
+                <path d="M20 240 Q 120 205 220 240 T 380 230 L 380 380 L 20 380 Z" fill="#B9FBC0" />
+                <path d="M20 270 Q 140 235 230 278 T 380 265 L 380 380 L 20 380 Z" fill="#BDE0FE" />
+                <path d="M60 320 Q 130 302 200 324" stroke="#FFFDF9" stroke-width="6" stroke-linecap="round" fill="none" />
+                <path d="M235 340 Q 300 325 350 344" stroke="#FFFDF9" stroke-width="6" stroke-linecap="round" fill="none" />
+                <!-- Palm -->
+                <path d="M90 250 Q 82 175 102 125" stroke="#8C7362" stroke-width="12" stroke-linecap="round" fill="none" />
+                <g fill="#7AD38E">
+                  <path d="M102 125 Q 52 108 46 142 Q 78 136 102 125 Z" />
+                  <path d="M102 125 Q 78 78 112 72 Q 116 102 102 125 Z" />
+                  <path d="M102 125 Q 148 92 158 124 Q 128 132 102 125 Z" />
+                  <path d="M102 125 Q 146 144 138 174 Q 112 150 102 125 Z" />
+                </g>
+                <!-- Lotus -->
+                <g transform="translate(280, 295)">
+                  <ellipse cx="0" cy="14" rx="34" ry="10" fill="#B9FBC0" />
+                  <path d="M-22 10 Q -12 -22 0 10 Q 12 -22 22 10 Z" fill="#FFC8DD" />
+                  <path d="M-12 10 Q 0 -26 12 10 Z" fill="#FFA6C9" />
+                </g>
+              </svg>`
+          };
+        case "pharaoh":
+          return {
+            bg: "#FFF5D6",
+            caption: "Faraón s kráľovskou korunou",
+            svg: `
+              <svg viewBox="0 0 400 400" width="100%" height="100%">
+                <rect x="20" y="20" width="360" height="360" rx="34" fill="#FFF5D6" />
+                <circle cx="200" cy="200" r="138" fill="#FFFDF9" opacity="0.7" />
+                <!-- Nemes Headdress -->
+                <path d="M105 295 L 122 130 Q 200 72 278 130 L 295 295 Q 260 310 245 280 L 245 215 L 155 215 L 155 280 Q 140 310 105 295 Z" fill="#BDE0FE" stroke="#4A4458" stroke-width="5" stroke-linejoin="round" />
+                <!-- Gold Stripes -->
+                <path d="M126 155 L 274 155 M118 195 L 282 195 M112 235 L 155 235 M245 235 L 288 235 M108 270 L 153 270 M247 270 L 292 270" stroke="#FFF1A8" stroke-width="10" />
+                <!-- Face -->
+                <path d="M150 155 Q 150 245 200 255 Q 250 245 250 155 Q 200 142 150 155 Z" fill="#FFD6A5" stroke="#4A4458" stroke-width="5" />
+                <!-- Eyes & Smile -->
+                <ellipse cx="180" cy="185" rx="7" ry="5" fill="#4A4458" />
+                <ellipse cx="220" cy="185" rx="7" ry="5" fill="#4A4458" />
+                <path d="M168 173 Q 180 166 192 173 M208 173 Q 220 166 232 173" stroke="#4A4458" stroke-width="4" stroke-linecap="round" fill="none" />
+                <path d="M188 218 Q 200 227 212 218" stroke="#4A4458" stroke-width="4" stroke-linecap="round" fill="none" />
+                <!-- Ceremonial Beard -->
+                <rect x="191" y="253" width="18" height="44" rx="8" fill="#4A4458" />
+                <!-- Uraeus Cobra Emblem -->
+                <circle cx="200" cy="126" r="14" fill="#FFF1A8" stroke="#4A4458" stroke-width="4" />
+                <circle cx="200" cy="126" r="5" fill="#FFC8DD" />
+                <!-- Collar -->
+                <path d="M142 295 Q 200 342 258 295 L 245 268 Q 200 296 155 268 Z" fill="#FFC8DD" stroke="#4A4458" stroke-width="4" />
+              </svg>`
+          };
+        case "pyramid":
+          return {
+            bg: "#FFECD9",
+            caption: "Pyramídy v Gíze",
+            svg: `
+              <svg viewBox="0 0 400 400" width="100%" height="100%">
+                <rect x="20" y="20" width="360" height="360" rx="34" fill="#EAF5FF" />
+                <circle cx="310" cy="95" r="36" fill="#FFF1A8" />
+                <path d="M20 295 Q 190 265 380 295 L 380 380 L 20 380 Z" fill="#FFE3BE" />
+                <!-- Big Pyramid -->
+                <polygon points="55,305 180,105 305,305" fill="#FFD6A5" stroke="#4A4458" stroke-width="4" stroke-linejoin="round" />
+                <polygon points="180,105 305,305 220,305" fill="#F4BC80" stroke="#4A4458" stroke-width="4" stroke-linejoin="round" />
+                <!-- Stone lines -->
+                <path d="M142 165 L 218 165 M112 215 L 248 215 M84 260 L 276 260" stroke="#4A4458" stroke-width="2.5" opacity="0.25" />
+                <!-- Small Pyramid -->
+                <polygon points="225,315 300,195 365,315" fill="#FFF1A8" stroke="#4A4458" stroke-width="4" stroke-linejoin="round" />
+                <polygon points="300,195 365,315 318,315" fill="#EAD77C" stroke="#4A4458" stroke-width="4" stroke-linejoin="round" />
+                <!-- Clouds -->
+                <g fill="#FFFDF9">
+                  <rect x="52" y="74" width="84" height="24" rx="12" />
+                  <circle cx="80" cy="74" r="16" />
+                  <circle cx="106" cy="70" r="18" />
+                </g>
+              </svg>`
+          };
+        case "hieroglyphs":
+          return {
+            bg: "#F1EBFC",
+            caption: "Egyptská tabuľka s hieroglyfmi",
+            svg: `
+              <svg viewBox="0 0 400 400" width="100%" height="100%">
+                <rect x="20" y="20" width="360" height="360" rx="34" fill="#F1EBFC" />
+                <!-- Stone Tablet / Cartouche -->
+                <rect x="85" y="50" width="230" height="300" rx="46" fill="#FFD6A5" stroke="#4A4458" stroke-width="5" />
+                <rect x="104" y="68" width="192" height="264" rx="34" fill="#FFFDF9" />
+                <!-- Eye of Horus -->
+                <g transform="translate(150, 120)" stroke="#4A4458" stroke-width="4.5" fill="none" stroke-linecap="round">
+                  <path d="M0 0 Q 38 -24 76 0 Q 38 22 0 0 Z" fill="#BDE0FE" />
+                  <circle cx="38" cy="0" r="10" fill="#4A4458" />
+                  <path d="M22 14 L 18 36 M48 14 Q 60 32 76 28" />
+                </g>
+                <!-- Ankh -->
+                <g transform="translate(145, 215)" stroke="#4A4458" stroke-width="5" fill="none" stroke-linecap="round">
+                  <ellipse cx="0" cy="-16" rx="12" ry="15" fill="#FFC8DD" />
+                  <line x1="0" y1="-1" x2="0" y2="38" />
+                  <line x1="-18" y1="12" x2="18" y2="12" />
+                </g>
+                <!-- Sun & Water Glyphs -->
+                <circle cx="242" cy="210" r="22" fill="#FFF1A8" stroke="#4A4458" stroke-width="4" />
+                <circle cx="242" cy="210" r="7" fill="#4A4458" />
+                <path d="M125 282 L 145 268 L 165 282 L 185 268 L 205 282 L 225 268 L 245 282 L 265 268" stroke="#BDE0FE" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+              </svg>`
+          };
+        case "papyrus":
+          return {
+            bg: "#E6FCEB",
+            caption: "Zvitok papyrusu a trstinové pero",
+            svg: `
+              <svg viewBox="0 0 400 400" width="100%" height="100%">
+                <rect x="20" y="20" width="360" height="360" rx="34" fill="#E6FCEB" />
+                <!-- Scroll -->
+                <rect x="85" y="105" width="220" height="190" rx="16" fill="#FFF1A8" stroke="#4A4458" stroke-width="5" />
+                <rect x="65" y="95" width="38" height="210" rx="19" fill="#FFD6A5" stroke="#4A4458" stroke-width="5" />
+                <rect x="285" y="95" width="38" height="210" rx="19" fill="#FFD6A5" stroke="#4A4458" stroke-width="5" />
+                <!-- Lines on papyrus -->
+                <line x1="128" y1="150" x2="255" y2="150" stroke="#4A4458" stroke-width="5" stroke-linecap="round" opacity="0.45" />
+                <line x1="128" y1="185" x2="240" y2="185" stroke="#4A4458" stroke-width="5" stroke-linecap="round" opacity="0.45" />
+                <line x1="128" y1="220" x2="260" y2="220" stroke="#4A4458" stroke-width="5" stroke-linecap="round" opacity="0.45" />
+                <line x1="128" y1="255" x2="210" y2="255" stroke="#4A4458" stroke-width="5" stroke-linecap="round" opacity="0.45" />
+                <!-- Reed Pen -->
+                <g transform="translate(275, 230) rotate(-32)">
+                  <rect x="-10" y="-140" width="20" height="145" rx="8" fill="#B9FBC0" stroke="#4A4458" stroke-width="4" />
+                  <polygon points="-10,5 10,5 0,28" fill="#4A4458" />
+                </g>
+              </svg>`
+          };
+        case "mummy":
+          return {
+            bg: "#FFEBF2",
+            caption: "Zdobený egyptský sarkofág",
+            svg: `
+              <svg viewBox="0 0 400 400" width="100%" height="100%">
+                <rect x="20" y="20" width="360" height="360" rx="34" fill="#FFEBF2" />
+                <circle cx="200" cy="200" r="145" fill="#FFFDF9" opacity="0.65" />
+                <!-- Sarcophagus Outline -->
+                <path d="M150 65 Q 200 45 250 65 L 278 145 L 245 340 Q 200 355 155 340 L 122 145 Z" fill="#FFF1A8" stroke="#4A4458" stroke-width="5" stroke-linejoin="round" />
+                <!-- Bands -->
+                <path d="M138 190 L 262 190 M144 235 L 256 235 M150 280 L 250 280" stroke="#BDE0FE" stroke-width="14" />
+                <!-- Face -->
+                <circle cx="200" cy="122" r="34" fill="#FFD6A5" stroke="#4A4458" stroke-width="4" />
+                <circle cx="188" cy="118" r="4.5" fill="#4A4458" />
+                <circle cx="212" cy="118" r="4.5" fill="#4A4458" />
+                <path d="M190 132 Q 200 140 210 132" stroke="#4A4458" stroke-width="3.5" stroke-linecap="round" fill="none" />
+                <!-- Collar -->
+                <path d="M152 152 Q 200 185 248 152" stroke="#FFC8DD" stroke-width="14" stroke-linecap="round" fill="none" />
+              </svg>`
+          };
+        case "sphinx":
+          return {
+            bg: "#FFF0DD",
+            caption: "Veľká sfinga strážiaca Gízu",
+            svg: `
+              <svg viewBox="0 0 400 400" width="100%" height="100%">
+                <rect x="20" y="20" width="360" height="360" rx="34" fill="#EAF5FF" />
+                <circle cx="95" cy="95" r="36" fill="#FFF1A8" />
+                <path d="M20 295 L 380 295 L 380 380 L 20 380 Z" fill="#FFE3BE" />
+                <!-- Sphinx Body & Paws -->
+                <path d="M90 300 L 105 220 Q 130 205 180 210 L 260 210 L 285 280 L 325 280 Q 340 280 340 300 Z" fill="#FFD6A5" stroke="#4A4458" stroke-width="5" stroke-linejoin="round" />
+                <!-- Headdress & Head -->
+                <path d="M205 215 L 218 115 Q 252 88 286 115 L 298 215 Z" fill="#BDE0FE" stroke="#4A4458" stroke-width="5" stroke-linejoin="round" />
+                <circle cx="252" cy="152" r="32" fill="#FFD6A5" stroke="#4A4458" stroke-width="4" />
+                <circle cx="242" cy="148" r="4" fill="#4A4458" />
+                <circle cx="264" cy="148" r="4" fill="#4A4458" />
+                <path d="M244 162 Q 253 168 262 162" stroke="#4A4458" stroke-width="3.5" stroke-linecap="round" fill="none" />
+              </svg>`
+          };
+        case "god_ra":
+          return {
+            bg: "#FFF5D6",
+            caption: "Okrídlený slnečný kotúč boha Ré",
+            svg: `
+              <svg viewBox="0 0 400 400" width="100%" height="100%">
+                <rect x="20" y="20" width="360" height="360" rx="34" fill="#FFF5D6" />
+                <!-- Wings -->
+                <path d="M195 190 Q 115 110 38 145 Q 65 205 160 215 Z" fill="#BDE0FE" stroke="#4A4458" stroke-width="4.5" stroke-linejoin="round" />
+                <path d="M180 205 Q 105 170 55 195 Q 85 235 165 232 Z" fill="#D7C6F5" stroke="#4A4458" stroke-width="4.5" stroke-linejoin="round" />
+                <path d="M205 190 Q 285 110 362 145 Q 335 205 240 215 Z" fill="#BDE0FE" stroke="#4A4458" stroke-width="4.5" stroke-linejoin="round" />
+                <path d="M220 205 Q 295 170 345 195 Q 315 235 235 232 Z" fill="#D7C6F5" stroke="#4A4458" stroke-width="4.5" stroke-linejoin="round" />
+                <!-- Sun Disc -->
+                <circle cx="200" cy="195" r="56" fill="#FFD6A5" stroke="#4A4458" stroke-width="5" />
+                <circle cx="200" cy="195" r="36" fill="#FFF1A8" />
+                <!-- Rays -->
+                <g stroke="#F2BE86" stroke-width="6" stroke-linecap="round">
+                  <line x1="200" y1="82" x2="200" y2="112" />
+                  <line x1="200" y1="278" x2="200" y2="308" />
+                  <line x1="125" y1="115" x2="145" y2="135" />
+                  <line x1="275" y1="115" x2="255" y2="135" />
+                </g>
+              </svg>`
+          };
+        case "tutankhamun":
+          return {
+            bg: "#EAF5FF",
+            caption: "Zlatá maska faraóna Tutanchamona",
+            svg: `
+              <svg viewBox="0 0 400 400" width="100%" height="100%">
+                <rect x="20" y="20" width="360" height="360" rx="34" fill="#EAF5FF" />
+                <circle cx="200" cy="200" r="140" fill="#FFFDF9" opacity="0.65" />
+                <path d="M100 300 L 118 125 Q 200 68 282 125 L 300 300 L 245 300 L 245 215 L 155 215 L 155 300 Z" fill="#FFF1A8" stroke="#4A4458" stroke-width="5" stroke-linejoin="round" />
+                <path d="M122 152 L 278 152 M114 190 L 286 190 M108 228 L 155 228 M245 228 L 292 228 M104 266 L 155 266 M245 266 L 296 266" stroke="#BDE0FE" stroke-width="11" />
+                <path d="M148 148 Q 148 248 200 262 Q 252 248 252 148 Q 200 135 148 148 Z" fill="#FFF1A8" stroke="#4A4458" stroke-width="5" />
+                <ellipse cx="178" cy="182" rx="8" ry="5" fill="#4A4458" />
+                <ellipse cx="222" cy="182" rx="8" ry="5" fill="#4A4458" />
+                <path d="M188 218 Q 200 226 212 218" stroke="#4A4458" stroke-width="4" stroke-linecap="round" fill="none" />
+                <rect x="190" y="260" width="20" height="46" rx="8" fill="#BDE0FE" stroke="#4A4458" stroke-width="4" />
+                <circle cx="200" cy="118" r="12" fill="#FFC8DD" stroke="#4A4458" stroke-width="4" />
+              </svg>`
+          };
+        case "calendar":
+        default:
+          return {
+            bg: "#F1EBFC",
+            caption: "Egyptský slnečný kalendár",
+            svg: `
+              <svg viewBox="0 0 400 400" width="100%" height="100%">
+                <rect x="20" y="20" width="360" height="360" rx="34" fill="#F1EBFC" />
+                <circle cx="200" cy="200" r="130" fill="#FFFDF9" stroke="#4A4458" stroke-width="5" />
+                <circle cx="200" cy="200" r="95" fill="#FFF1A8" stroke="#4A4458" stroke-width="4" />
+                <!-- 12 months ticks -->
+                <g stroke="#4A4458" stroke-width="5" stroke-linecap="round">
+                  <line x1="200" y1="80" x2="200" y2="100" />
+                  <line x1="200" y1="300" x2="200" y2="320" />
+                  <line x1="80" y1="200" x2="100" y2="200" />
+                  <line x1="300" y1="200" x2="320" y2="200" />
+                  <line x1="115" y1="115" x2="130" y2="130" />
+                  <line x1="285" y1="115" x2="270" y2="130" />
+                  <line x1="115" y1="285" x2="130" y2="270" />
+                  <line x1="285" y1="285" x2="270" y2="270" />
+                </g>
+                <circle cx="200" cy="200" r="46" fill="#FFD6A5" stroke="#4A4458" stroke-width="4" />
+                <text x="200" y="212" text-anchor="middle" font-family="'Baloo 2', sans-serif" font-size="34" font-weight="800" fill="#4A4458">365</text>
+              </svg>`
+          };
+      }
+    }
+
+    /* =========================================================================
+       GAME STATE & SHUFFLE HELPERS
+       ========================================================================= */
+    const LETTERS = ["A", "B", "C", "D"];
+    const PRAISE_PHRASES = [
+      "Výborne!",
+      "Skvelá práca!",
+      "Presne tak!",
+      "Úžasné!",
+      "Máš pravdu!"
+    ];
+
+    let shuffledQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let resultsHistory = [];
+    let isAnswered = false;
+    let currentCorrectVisualIdx = 0;
+
+    // DOM Elements
+    const screenStart = document.getElementById("screen-start");
+    const screenGame = document.getElementById("screen-game");
+    const screenEnd = document.getElementById("screen-end");
+
+    const btnStart = document.getElementById("btn-start");
+    const btnRestart = document.getElementById("btn-restart");
+
+    const hudCounter = document.getElementById("hud-counter");
+    const hudScore = document.getElementById("hud-score");
+    const progressSteps = document.getElementById("progress-steps");
+
+    const visualSvgWrap = document.getElementById("visual-svg-wrap");
+    const visualCaption = document.getElementById("visual-caption");
+    const questionTopic = document.getElementById("question-topic");
+    const questionText = document.getElementById("question-text");
+    const optionsGrid = document.getElementById("options-grid");
+    const feedbackSlot = document.getElementById("feedback-slot");
+    const confettiLayer = document.getElementById("confetti-layer");
+
+    const endRank = document.getElementById("end-rank");
+    const endTitle = document.getElementById("end-title");
+    const endScoreNum = document.getElementById("end-score-num");
+    const endStars = document.getElementById("end-stars");
+    const endMessage = document.getElementById("end-message");
+
+    // Sync initial question count on start screen
+    document.getElementById("start-q-count").textContent = QUESTIONS.length;
+    document.getElementById("highlight-count").textContent = QUESTIONS.length;
+
+    function shuffleArray(arr) {
+      const copy = arr.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function showScreen(screenEl) {
+      [screenStart, screenGame, screenEnd].forEach((s) => s.classList.remove("active"));
+      screenEl.classList.add("active");
+    }
+
+    function spawnConfettiBurst() {
+      confettiLayer.innerHTML = "";
+      const colors = ["#B9FBC0", "#FFF1A8", "#FFC8DD", "#BDE0FE", "#D7C6F5", "#FFD6A5"];
+      const originX = 1120;
+      const originY = 580;
+
+      for (let i = 0; i < 24; i++) {
+        const dot = document.createElement("div");
+        dot.className = "confetti-dot";
+        const size = 12 + Math.random() * 14;
+        const angle = (Math.PI * 2 * i) / 24 + (Math.random() * 0.3 - 0.15);
+        const dist = 140 + Math.random() * 260;
+        dot.style.width = size + "px";
+        dot.style.height = size + "px";
+        dot.style.left = originX + "px";
+        dot.style.top = originY + "px";
+        dot.style.background = colors[i % colors.length];
+        dot.style.setProperty("--tx", Math.cos(angle) * dist + "px");
+        dot.style.setProperty("--ty", (Math.sin(angle) * dist - 60) + "px");
+        confettiLayer.appendChild(dot);
+      }
+
+      setTimeout(() => {
+        confettiLayer.innerHTML = "";
+      }, 900);
+    }
+
+    /* =========================================================================
+       GAME FLOW
+       ========================================================================= */
+    function startGame() {
+      ensureAudio();
+      shuffledQuestions = shuffleArray(QUESTIONS);
+      currentIndex = 0;
+      score = 0;
+      resultsHistory = new Array(shuffledQuestions.length).fill("pending");
+      showScreen(screenGame);
+      renderQuestion();
+    }
+
+    function renderProgressBar() {
+      progressSteps.innerHTML = "";
+      resultsHistory.forEach((status, idx) => {
+        const step = document.createElement("div");
+        step.className = "progress-step";
+        if (status === "correct") {
+          step.classList.add("correct");
+        } else if (status === "wrong") {
+          step.classList.add("wrong");
+        } else if (idx === currentIndex) {
+          step.classList.add("current");
+        }
+        progressSteps.appendChild(step);
+      });
+    }
+
+    function renderQuestion() {
+      isAnswered = false;
+      const q = shuffledQuestions[currentIndex];
+      const total = shuffledQuestions.length;
+
+      hudCounter.textContent = "Otázka " + (currentIndex + 1) + " / " + total;
+      hudScore.textContent = "Skóre: " + score;
+      renderProgressBar();
+
+      // Visual illustration
+      const illu = getIllustrationData(q.icon);
+      visualSvgWrap.innerHTML = illu.svg;
+      visualCaption.textContent = illu.caption;
+
+      // Text
+      questionTopic.textContent = q.topic;
+      questionText.textContent = q.question;
+
+      // Shuffle options while remembering which one is correct
+      const indexedOptions = q.options.map((text, idx) => ({
+        text,
+        isCorrect: idx === q.correct
+      }));
+      const shuffledOptions = shuffleArray(indexedOptions);
+      currentCorrectVisualIdx = shuffledOptions.findIndex((o) => o.isCorrect);
+
+      optionsGrid.innerHTML = "";
+      shuffledOptions.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option-btn";
+        btn.dataset.idx = String(idx);
+        btn.innerHTML = `
+          <span class="option-letter">${LETTERS[idx]}</span>
+          <span class="option-label">${opt.text}</span>
+          <span class="option-status-icon" aria-hidden="true"></span>
+        `;
+        btn.addEventListener("click", () => handleAnswer(idx, shuffledOptions));
+        optionsGrid.appendChild(btn);
+      });
+
+      feedbackSlot.innerHTML = `
+        <div class="feedback-idle">
+          Vyber jednu zo štyroch možností kliknutím, dotykom alebo klávesmi 1–4.
+        </div>
+      `;
+    }
+
+    function handleAnswer(selectedIdx, shuffledOptions) {
+      if (isAnswered) return;
+      isAnswered = true;
+      ensureAudio();
+
+      const q = shuffledQuestions[currentIndex];
+      const isRight = selectedIdx === currentCorrectVisualIdx;
+      const buttons = Array.from(optionsGrid.querySelectorAll(".option-btn"));
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        const iconSpan = btn.querySelector(".option-status-icon");
+        if (idx === currentCorrectVisualIdx) {
+          btn.classList.add("is-correct");
+          iconSpan.textContent = "✓";
+        } else if (idx === selectedIdx && !isRight) {
+          btn.classList.add("is-wrong");
+          iconSpan.textContent = "✕";
+        } else {
+          btn.classList.add("is-dimmed");
+        }
+      });
+
+      if (isRight) {
+        score += 1;
+        resultsHistory[currentIndex] = "correct";
+        playCorrectSound();
+        spawnConfettiBurst();
+      } else {
+        resultsHistory[currentIndex] = "wrong";
+        playWrongSound();
+      }
+
+      hudScore.textContent = "Skóre: " + score;
+      renderProgressBar();
+
+      const isLast = currentIndex === shuffledQuestions.length - 1;
+      const nextLabel = isLast ? "Zobraziť výsledok" : "Pokračovať";
+      const praise = PRAISE_PHRASES[Math.floor(Math.random() * PRAISE_PHRASES.length)];
+      const correctText = shuffledOptions[currentCorrectVisualIdx].text;
+
+      if (isRight) {
+        feedbackSlot.innerHTML = `
+          <div class="feedback-card correct">
+            <div class="feedback-body">
+              <div class="feedback-title"><span>✨</span><span>${praise}</span></div>
+              <div class="feedback-fact">${q.fact}</div>
+            </div>
+            <button id="btn-next-q" class="btn-next" type="button">
+              <span>${nextLabel}</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        `;
+      } else {
+        feedbackSlot.innerHTML = `
+          <div class="feedback-card wrong">
+            <div class="feedback-body">
+              <div class="feedback-title"><span>💡</span><span>Správna odpoveď: ${correctText}</span></div>
+              <div class="feedback-fact">${q.fact}</div>
+            </div>
+            <button id="btn-next-q" class="btn-next" type="button">
+              <span>${nextLabel}</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        `;
+      }
+
+      document.getElementById("btn-next-q").addEventListener("click", goToNext);
+    }
+
+    function goToNext() {
+      if (currentIndex < shuffledQuestions.length - 1) {
+        currentIndex += 1;
+        renderQuestion();
+      } else {
+        finishGame();
+      }
+    }
+
+    function finishGame() {
+      showScreen(screenEnd);
+      playFinishSound();
+
+      const total = shuffledQuestions.length;
+      const ratio = total > 0 ? score / total : 0;
+
+      endScoreNum.textContent = score + " / " + total;
+
+      let starCount = 1;
+      let rankLabel = "Mladý objaviteľ";
+      let headline = "Výprava úspešne dokončená!";
+      let message = "Skvelý pokus! Každá otázka ti pomohla objaviť nové fakty o starovekom Egypte. Skús si hru zahrať ešte raz a prekonaj svoj výsledok.";
+
+      if (ratio >= 0.85) {
+        starCount = 3;
+        rankLabel = "Majster egyptských dejín";
+        headline = "Fantastický výsledok!";
+        message = "Staroveký Egypt poznáš na jednotku! Faraóni aj pisári na brehu Nílu by na teba boli právom hrdí.";
+      } else if (ratio >= 0.5) {
+        starCount = 2;
+        rankLabel = "Šikovný pisár z Gízy";
+        headline = "Veľmi pekná práca!";
+        message = "Už vieš veľa zaujímavého o pyramídach, Níle aj egyptských bohoch. Ešte jedno kolo a budeš skutočný odborník!";
+      }
+
+      endRank.textContent = rankLabel;
+      endTitle.textContent = headline;
+      endMessage.textContent = message;
+
+      endStars.innerHTML = "";
+      for (let i = 0; i < 3; i++) {
+        const filled = i < starCount;
+        const starEl = document.createElement("div");
+        starEl.innerHTML = `
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="${filled ? "#FFD6A5" : "#EFE7DB"}" stroke="#4A4458" stroke-width="1.8" stroke-linejoin="round">
+            <polygon points="12,2 15.1,8.3 22,9.3 17,14.2 18.2,21 12,17.8 5.8,21 7,14.2 2,9.3 8.9,8.3" />
+          </svg>
+        `;
+        endStars.appendChild(starEl);
+      }
+    }
+
+    /* =========================================================================
+       EVENT LISTENERS & KEYBOARD SHORTCUTS
+       ========================================================================= */
+    btnStart.addEventListener("click", startGame);
+    btnRestart.addEventListener("click", startGame);
+
+    document.addEventListener("keydown", (e) => {
+      if (screenStart.classList.contains("active")) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          startGame();
+        }
+        return;
+      }
+
+      if (screenEnd.classList.contains("active")) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          startGame();
+        }
+        return;
+      }
+
+      if (screenGame.classList.contains("active")) {
+        if (!isAnswered && ["1", "2", "3", "4"].includes(e.key)) {
+          const idx = Number(e.key) - 1;
+          const btn = optionsGrid.querySelector(`.option-btn[data-idx="${idx}"]`);
+          if (btn) btn.click();
+        } else if (isAnswered && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          const nextBtn = document.getElementById("btn-next-q");
+          if (nextBtn) nextBtn.click();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
